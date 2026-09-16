@@ -1,0 +1,27 @@
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# Python environments and caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# Frontend dependencies and generated output
+node_modules/
+dist/
+build/
+docs/
+
+# Downloaded sources; prepared demo data stays versioned
+data/raw/
+
+# Operating system files
+.DS_Store
+Thumbs.db

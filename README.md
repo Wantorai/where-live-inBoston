@@ -28,9 +28,9 @@ Census API + TIGER/Line + neighborhood boundaries
                Separate web frontend
 ```
 
-The backend and data pipeline use Python. The proposed frontend uses TypeScript, Vite, and MapLibre GL JS; this choice will be reviewed before frontend implementation. Prepared GeoJSON files provide the initial storage layer.
+The backend and data pipeline use Python and FastAPI. The frontend uses plain HTML, CSS, and JavaScript, with MapLibre GL JS proposed for the map. FastAPI will serve the frontend files and API from the same application. Prepared GeoJSON files provide the initial storage layer. TypeScript can be considered later if the browser code grows.
 
-Docker Compose will run the API and frontend locally. The demo will include a small, documented real-data snapshot so reviewers do not need a Census API key or a data import to explore the map. Data refresh will be a separate workflow. Initial image builds and the online basemap require internet access.
+Docker Compose will run one application container serving both the API and frontend locally. The demo will include a small, documented real-data snapshot so reviewers do not need a Census API key or a data import to explore the map. Data refresh will be a separate workflow. Initial image builds and the online basemap require internet access.
 
 An optional Folium HTML export may be added later. Hosted deployment is outside the current scope.
 
@@ -47,7 +47,7 @@ The intended demo workflow is `docker compose up --build`, then opening a docume
 
 1. Agree on architecture and document the development workflow.
 2. Create a minimal FastAPI service with a health endpoint.
-3. Containerize the API, then add a minimal separate frontend.
+3. Containerize the API, then add a minimal HTML/JavaScript frontend.
 4. Fetch Census population estimates and compatible boundaries.
 5. Validate joins and land-area density calculations.
 6. Implement map layers, tooltips, legend, and error states.
@@ -62,3 +62,4 @@ The public README is maintained in English. Learning notes and implementation di
 - [Local Git workflow](docs/git-workflow.md)
 
 Changes are developed in small, explained steps. The repository owner performs all pushes and any future deployments.
+
