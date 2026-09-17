@@ -2,7 +2,7 @@
 
 A Python geospatial portfolio project exploring residential population density in Boston using U.S. Census data.
 
-**Status: initial API implemented.** `GET /api/health` returns `{"status":"ok"}`. The map, data pipeline, frontend, and Docker setup are planned.
+**Status: initial API and Docker setup implemented.** `GET /api/health` returns `{"status":"ok"}`. The map, data pipeline, and frontend are planned.
 
 ## MVP
 
@@ -30,7 +30,7 @@ Census API + TIGER/Line + neighborhood boundaries
 
 The architecture above is the target design. The backend uses Python and FastAPI; the data pipeline will also use Python. The planned frontend uses plain HTML, CSS, and JavaScript, with MapLibre GL JS proposed for the map. FastAPI will serve the frontend files and API from the same application. Prepared GeoJSON files will provide the initial storage layer. TypeScript can be considered later if the browser code grows.
 
-Docker Compose will run one application container serving both the API and frontend locally. The demo will include a small, documented real-data snapshot so reviewers do not need a Census API key or a data import to explore the map. Data refresh will be a separate workflow. Initial image builds and the online basemap require internet access.
+Docker Compose currently runs one API container. The same application will also serve the frontend when it is implemented. The map demo will include a small, documented real-data snapshot so reviewers do not need a Census API key or a data import to explore the map. Data refresh will be a separate workflow. Initial image builds and the future online basemap require internet access.
 
 An optional Folium HTML export may be added later. Hosted deployment is outside the current scope.
 
@@ -41,7 +41,42 @@ git clone https://github.com/Wantorai/where-live-inBoston.git
 cd where-live-inBoston
 ```
 
-## Run the API locally
+## Run with Docker (recommended for reviewers)
+
+Install and start Docker Desktop with Linux containers, or use Docker Engine with the Compose plugin on Linux. From the repository root:
+
+```bash
+docker compose up --build
+```
+
+Wait for `Application startup complete`, then open:
+
+- <http://127.0.0.1:8000/api/health> — HTTP 200 with `{"status":"ok"}`.
+- <http://127.0.0.1:8000/docs> — interactive API documentation.
+
+Python, uv, and Census credentials are not required on the host. The first build downloads base images and dependencies. Only the API is available at this stage; `/` returns 404 until the frontend is added. Swagger UI in `/docs` loads assets from a CDN.
+
+Stop with **Ctrl+C**, then remove the project's stopped container and network:
+
+```bash
+docker compose down
+```
+
+For background mode, wait for the container health check:
+
+```bash
+docker compose up --build --wait --wait-timeout 60
+docker compose ps
+docker compose logs api
+```
+
+`docker compose down` also stops a background run. It retains the built image for reuse. The health check confirms the API responds; it does not validate Census data.
+
+Port 8000 is exposed only on the host's loopback interface. If it is occupied by a locally running Uvicorn process, stop that process first. Alternatively, change the mapping in `compose.yaml` to `127.0.0.1:8001:8000` and open port 8001 in your browser.
+
+Source files are copied into the image. After code changes, run `docker compose up --build` again; this Docker setup does not use auto-reload or mount the host `.venv`.
+
+## Run without Docker (development)
 
 Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then run these commands from the repository root:
 
@@ -69,15 +104,11 @@ uv run --locked ruff format --check .
 
 The health test checks the HTTP status, JSON content type, and response body without starting a network server.
 
-## Planned Docker demo
-
-The intended demo workflow is `docker compose up --build`, then opening a documented localhost URL. **This command is a design target, not a working launch instruction yet.** Tested startup and shutdown instructions will be added with the Docker implementation.
-
 ## Implementation roadmap
 
 1. Agree on architecture and document the development workflow.
 2. Create a minimal FastAPI service with a health endpoint — implemented.
-3. Containerize the API, then add a minimal HTML/JavaScript frontend.
+3. Containerize the API — implemented; add a minimal HTML/JavaScript frontend next.
 4. Fetch Census population estimates and compatible boundaries.
 5. Validate joins and land-area density calculations.
 6. Implement map layers, tooltips, legend, and error states.
