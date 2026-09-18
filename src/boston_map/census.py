@@ -62,6 +62,11 @@ def parse_population(payload: object, *, demographics: bool = False) -> dict:
     row = dict(zip(expected, values, strict=True))
     if (row["state"], row["place"]) != ("25", "07000"):
         raise ValueError("Response geography is not Boston city, Massachusetts.")
+    return parse_metrics(row, row["state"] + row["place"], demographics=demographics)
+
+
+def parse_metrics(row: dict, geoid: str, *, demographics: bool = False) -> dict:
+    """Parse estimates after the caller has validated the geography and columns."""
     if not isinstance(row["NAME"], str):
         raise ValueError("Expected a geographic name.")
 
@@ -80,7 +85,7 @@ def parse_population(payload: object, *, demographics: bool = False) -> dict:
 
     result = {
         "name": row["NAME"],
-        "geoid": row["state"] + row["place"],
+        "geoid": geoid,
         "period": "2020-2024",
         "population_estimate": count("B01003_001E"),
         "population_moe": count("B01003_001M"),
@@ -146,10 +151,15 @@ def parse_population(payload: object, *, demographics: bool = False) -> dict:
 
 def fetch_population(api_key: str, *, demographics: bool = False) -> bytes:
     """Make one request; do not expose the key through URLs or exception messages."""
+    return fetch_data(api_key, request_params(demographics))
+
+
+def fetch_data(api_key: str, params: dict[str, str]) -> bytes:
+    """Fetch Census JSON without exposing the key in errors or following redirects."""
     try:
         response = requests.get(
             ENDPOINT,
-            params={**request_params(demographics), "key": api_key},
+            params={**params, "key": api_key},
             timeout=30,
             allow_redirects=False,
         )

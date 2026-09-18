@@ -119,6 +119,22 @@ Add `--demographics` to collect race (B02001) and race/origin (B03002) estimates
 
 See [request parameters, field definitions, and sources](data/README.md). The CLI runs separately from the web app; no population data is displayed on the page yet.
 
+## Census tracts: county acquisition
+
+Download the same population and demographic fields for all Suffolk County tracts:
+
+```bash
+uv run --locked --env-file .env python -m boston_map.census_tracts
+```
+
+Rebuild the normalized snapshot from the saved raw response:
+
+```bash
+uv run --locked python -m boston_map.census_tracts --from-cache
+```
+
+The checked-in `data/processed/suffolk_tracts_2024.json` contains 235 tracts, source metadata, estimates, count margins of error, and derived percentages. **This is Suffolk County, not a Boston-only dataset.** Selecting Boston tracts requires compatible geographic boundaries, which are the next step. The web app does not display this snapshot yet. Refreshing requires a key; inspecting the included JSON does not.
+
 ## Checks
 
 ```bash

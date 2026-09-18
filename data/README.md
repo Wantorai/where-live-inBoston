@@ -81,3 +81,28 @@ Downloaded September 18, 2026; ACS period 2020–2024, Boston city, Massachusett
 | Non-Hispanic White alone (alternative definition) | 293,690 | 44.07% | ±2,152 |
 
 The alternative-definition row overlaps the White-alone row and must not be added to it. The two full demographic partitions each sum to 666,442. These are five-year estimates, not current counts. Tract-level acquisition and map display remain future steps.
+
+## Tract acquisition: Suffolk County
+
+ACS supports the tract hierarchy `state → county → tract`; it does not offer a `place → tract` filter in this release. See the [2024 ACS geography reference](https://api.census.gov/data/2024/acs/acs5/geography.html).
+
+We request `for=tract:*` and `in=state:25 county:025`. This covers Suffolk County, including places outside Boston. City selection is deliberately deferred until compatible geographic boundaries are available; county rows must not be presented as Boston-only observations.
+
+```bash
+uv run --locked --env-file .env python -m boston_map.census_tracts
+uv run --locked python -m boston_map.census_tracts --from-cache
+```
+
+The loader reuses the city example's variables and metric parsing. Each tract GEOID joins state (2 digits), county (3), and tract (6), preserving leading zeros. Rows are sorted by GEOID; duplicate IDs, unexpected geography, malformed codes and inconsistent demographic partitions are rejected. Zero-population tracts are retained with null percentages, not silently removed.
+
+Files:
+
+- `data/raw/census/suffolk_tracts_2024.json`: original response, ignored by Git.
+- Matching `.metadata.json`: source, request parameters without credentials, retrieval time, period and SHA-256.
+- `data/processed/suffolk_tracts_2024.json`: normalized rows and metadata, intended for Git. No geometry or density yet.
+
+Cached processing verifies the raw checksum and dataset parameters before rebuilding. The output is deterministic for the same cached response and metadata. Acquisition refreshes these snapshots; it is not a historical archive.
+
+Downloaded September 18, 2026: **235 unique tracts**, **785,121** summed population estimates, **8 zero-population tracts**, no missing population estimates. The population sum describes the downloaded county tracts, not Boston city (666,442 in the separate city query). Margins of error are not summed.
+
+Example: tract `000101`, GEOID `25025000101`, has population **1,588 ±302**, White alone **1,128 ±284 (71.03%)**, everyone else **460 (28.97%)**. These are ACS 2020–2024 estimates; percentage and derived-complement MOEs are not calculated. Boston membership is not asserted until the boundary check.
