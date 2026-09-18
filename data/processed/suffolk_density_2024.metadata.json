@@ -1,0 +1,33 @@
+{
+  "scope": "Suffolk County, Massachusetts; all county tracts",
+  "acs": {
+    "endpoint": "https://api.census.gov/data/2024/acs/acs5",
+    "params": {
+      "get": "NAME,B01003_001E,B01003_001M,B02001_001E,B02001_001M,B02001_002E,B02001_002M,B02001_003E,B02001_003M,B02001_004E,B02001_004M,B02001_005E,B02001_005M,B02001_006E,B02001_006M,B02001_007E,B02001_007M,B02001_008E,B02001_008M,B03002_001E,B03002_001M,B03002_003E,B03002_003M,B03002_004E,B03002_004M,B03002_005E,B03002_005M,B03002_006E,B03002_006M,B03002_007E,B03002_007M,B03002_008E,B03002_008M,B03002_009E,B03002_009M,B03002_012E,B03002_012M",
+      "for": "tract:*",
+      "in": "state:25 county:025"
+    },
+    "retrieved_at": "2026-09-18T14:27:54.482530+00:00",
+    "period": "2020-2024",
+    "scope": "Suffolk County, Massachusetts; not filtered to Boston city",
+    "sha256": "f34d6547facdabc4cd17f01cd147b5b19339d665cbd3981b61044586903d5188"
+  },
+  "acs_file_sha256": "5dbb13f7076b20be037f979807ba7d5ebba71565fda07c413e446f0471428a84",
+  "tiger": {
+    "url": "https://www2.census.gov/geo/tiger/TIGER2024/TRACT/tl_2024_25_tract.zip",
+    "vintage": 2024,
+    "retrieved_at": "2026-09-18T14:50:42.076529+00:00",
+    "sha256": "74ca27e8dd9ed393e43b75e237ff7d652ef072e413532821847de58a7aa4bfd4"
+  },
+  "feature_count": 235,
+  "crs": "EPSG:4326",
+  "formula": "population_estimate / (ALAND / 1000000)",
+  "density_unit": "people per square kilometer of land",
+  "geometry_modified": false,
+  "density_status_counts": {
+    "available": 234,
+    "no_land_area": 1
+  },
+  "population_sum": 785121,
+  "geojson_sha256": "cd7df2f1688190037cd67fe8a243b7c994b953981e648509389b2825d2a0ea72"
+}

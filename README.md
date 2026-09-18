@@ -2,7 +2,7 @@
 
 A Python geospatial portfolio project exploring residential population density across Suffolk County, Massachusetts (Boston, Chelsea, Revere, and Winthrop), using U.S. Census data.
 
-**Status: minimal frontend, API, and Docker setup implemented.** The home page checks the API connection. The map and data pipeline are planned.
+**Status: minimal frontend, API, and Docker setup implemented.** The home page checks the API connection. Census tract data and a density GeoJSON are prepared; the interactive map is the next step.
 
 ## MVP
 
@@ -55,7 +55,7 @@ Wait for `Application startup complete`, then open:
 - <http://127.0.0.1:8000/api/health> — HTTP 200 with `{"status":"ok"}`.
 - <http://127.0.0.1:8000/docs> — interactive API documentation.
 
-Python, uv, and Census credentials are not required on the host. The first build downloads base images and dependencies. The home page and API are available; the map and Census data are not implemented yet. Swagger UI in `/docs` loads assets from a CDN.
+Python, uv, and Census credentials are not required on the host. The first build downloads base images and dependencies. The home page and API are available; the prepared data is not displayed on a map yet. Swagger UI in `/docs` loads assets from a CDN.
 
 Stop with **Ctrl+C**, then remove the project's stopped container and network:
 
@@ -133,7 +133,26 @@ Rebuild the normalized snapshot from the saved raw response:
 uv run --locked python -m boston_map.census_tracts --from-cache
 ```
 
-The checked-in `data/processed/suffolk_tracts_2024.json` contains 235 tracts, source metadata, estimates, count margins of error, and derived percentages. **The map covers all of Suffolk County.** All 235 tracts remain in scope; no Boston city clipping is planned. The next step is to join compatible tract boundaries by GEOID and calculate population per square kilometer of land. The web app does not display this snapshot yet. Refreshing requires a key; inspecting the included JSON does not.
+The checked-in `data/processed/suffolk_tracts_2024.json` contains 235 tracts, source metadata, estimates, count margins of error, and derived percentages. **The map covers all of Suffolk County.** All 235 tracts remain in scope; no Boston city clipping is planned. Tract boundaries have now been joined by GEOID and land-area density calculated in the separate GeoJSON described below. The web app does not display this snapshot yet. Refreshing requires a key; inspecting the included JSON does not.
+
+## Prepare geographic boundaries and density
+
+From the repository root:
+
+```bash
+uv sync --locked
+uv run --locked python -m boston_map.geography
+```
+
+This downloads the official Massachusetts TIGER/Line 2024 tract archive (no Census API key needed), selects Suffolk County, and joins the included ACS snapshot by GEOID. The output is `data/processed/suffolk_density_2024.geojson`, with source metadata in the adjacent `.metadata.json` file. Both are intended for Git.
+
+```bash
+uv run --locked python -m boston_map.geography --from-cache
+```
+
+The cached command rebuilds without network access, after verifying the archive checksum. All 235 tracts match one-to-one. Density is population divided by land area in square kilometers: 234 tracts have a result, and one zero-land-area tract has a null density. Geometry is exported in WGS84 without clipping or simplification. Demographic values and margins of error are retained.
+
+This preparation command currently runs on the host with uv. The Docker web app does not yet include or serve the prepared GeoJSON; that will be added with the map.
 
 ## Checks
 
@@ -151,7 +170,7 @@ The health test checks the HTTP status, JSON content type, and response body wit
 2. Create a minimal FastAPI service with a health endpoint — implemented.
 3. Containerize the API and add a minimal HTML/JavaScript frontend — implemented.
 4. Fetch Census population estimates and compatible boundaries.
-5. Validate joins and land-area density calculations.
+5. Validate joins and land-area density calculations — implemented for all 235 Suffolk tracts.
 6. Implement map layers, tooltips, legend, and error states.
 7. Verify a fresh-clone Docker demo and complete the portfolio documentation.
 

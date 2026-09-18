@@ -106,3 +106,26 @@ Cached processing verifies the raw checksum and dataset parameters before rebuil
 Downloaded September 18, 2026: **235 unique tracts**, **785,121** summed population estimates, **8 zero-population tracts**, no missing population estimates. The population sum describes the downloaded county tracts, not Boston city (666,442 in the separate city query). Margins of error are not summed.
 
 Example: tract `000101`, GEOID `25025000101`, has population **1,588 ±302**, White alone **1,128 ±284 (71.03%)**, everyone else **460 (28.97%)**. These are ACS 2020–2024 estimates; percentage and derived-complement MOEs are not calculated. Boston membership is not required: the map covers all county tracts.
+
+## TIGER/Line geometry and population density
+
+Source: [TIGER/Line 2024 Massachusetts tracts](https://www2.census.gov/geo/tiger/TIGER2024/TRACT/tl_2024_25_tract.zip). The state archive is filtered by `STATEFP=25`, `COUNTYFP=025`. All 235 Suffolk GEOIDs match the ACS snapshot exactly; the join rejects missing matches or duplicates instead of dropping rows.
+
+`ALAND` and `AWATER` are Census land and water areas in square meters. Density uses **only ALAND**:
+
+```text
+land_area_km2 = ALAND / 1,000,000
+population_density_km2 = population_estimate / land_area_km2
+```
+
+For tract `25025000101`, 1,588 people / 0.249924 km² = approximately 6,353.93 people/km². No area is calculated from longitude/latitude degrees. Full tract geometries are retained, including water portions; no city clipping or simplification occurs. Coordinates are transformed to EPSG:4326 (longitude, latitude) for GeoJSON.
+
+Outputs:
+
+- `data/processed/suffolk_density_2024.geojson`: 235 polygon/multipolygon features, joined demographics, source land/water areas, density and status.
+- `data/processed/suffolk_density_2024.metadata.json`: source URLs, vintages, acquisition timestamps, input/output hashes, formula, units and validation summary.
+- `data/raw/tiger/`: archive and its metadata, excluded from Git.
+
+234 features have density; one has `density_status=no_land_area` and a null density. Zero population with positive land area produces zero density. Missing population would produce a null value with `missing_population` status. The population sum remains 785,121 after the join. No density or percentage margin of error is derived in this step; published count MOEs remain in the properties.
+
+The GeoJSON is a reproducible data artifact, not yet connected to the application. Rebuilding with `--from-cache` produced byte-identical GeoJSON in the tested environment.
