@@ -17,6 +17,8 @@ COPY README.md ./
 COPY src/ ./src/
 RUN uv sync --locked --no-dev --no-editable --no-cache
 
+COPY data/processed/suffolk_density_2024.geojson data/processed/suffolk_density_2024.metadata.json ./data/processed/
+
 RUN useradd --create-home --uid 10001 appuser
 USER appuser
 

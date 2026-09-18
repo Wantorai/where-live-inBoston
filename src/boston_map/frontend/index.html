@@ -1,40 +1,56 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Explore Suffolk County population density using U.S. Census data. A project in development.">
-    <title>Where Live in Boston</title>
-    <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="/static/styles.css">
-    <script src="/static/app.js" defer></script>
-  </head>
-  <body>
-    <main>
-      <header>
-        <p class="eyebrow">Boston · Population explorer</p>
-        <h1>Where Live in Boston</h1>
-        <p class="intro">Exploring Boston, Chelsea, Revere, and Winthrop.</p>
-      </header>
-
-      <section class="card" aria-labelledby="project-title">
-        <p class="eyebrow">Work in progress</p>
-        <h2 id="project-title">A closer look at Boston</h2>
-        <p>This project will map residential population density across Suffolk County using U.S. Census estimates, with Boston neighborhood boundaries for context.</p>
-        <p>The map and Census data are not available yet. This first page checks the connection to the application.</p>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Where Live in Boston · Population density</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/static/vendor/maplibre-gl.css">
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/vendor/maplibre-gl.js" defer></script>
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">Suffolk County · Massachusetts</p>
+      <h1>Where Live in Boston</h1>
+      <p class="intro">Population density across Boston, Chelsea, Revere, and Winthrop.</p>
+      <p>ACS 2020–2024 estimates · Census tract boundaries, 2024</p>
+    </header>
+    <div class="toolbar">
+      <p id="map-status" role="status" aria-live="polite">Loading tract data…</p>
+      <button id="retry" type="button">Reload map</button>
+      <button id="reset-view" type="button" disabled>Show whole county</button>
+      <label><input id="streets" type="checkbox"> Show street basemap (internet)</label>
+    </div>
+    <div class="map-layout">
+      <section class="map-card" aria-label="Interactive population density map">
+        <div id="map" aria-label="Suffolk County Census tracts"></div>
+        <p id="basemap-status" role="status"></p>
       </section>
-
-      <section class="card" aria-labelledby="connection-title">
-        <h2 id="connection-title">Application connection</h2>
-        <p id="connection-status" class="status" data-state="idle" role="status" aria-live="polite">Connection not checked yet.</p>
-        <button id="check-connection" type="button">Check connection</button>
-        <noscript><p>Enable JavaScript to check the connection, or open the <a href="/api/health">health endpoint</a> directly.</p></noscript>
-      </section>
-
-      <footer>
-        <span>Python · FastAPI · Open data</span>
-        <a href="/docs">API documentation</a>
-      </footer>
-    </main>
-  </body>
+      <aside>
+        <section class="card">
+          <h2>Population density</h2>
+          <p class="muted">People per km² of land</p>
+          <ul id="legend" class="legend"></ul>
+        </section>
+        <section class="card">
+          <label for="tract-select"><strong>Explore a tract</strong></label>
+          <select id="tract-select" disabled><option value="">Choose a tract or click the map</option></select>
+          <div id="tract-details"><p class="muted">Click a tract to see its population, land area, and demographics.</p></div>
+        </section>
+      </aside>
+    </div>
+    <section class="card notes">
+      <h2>How to read this map</h2>
+      <p>Density = estimated population ÷ land area. Full tract boundaries can include water, but water is excluded from the calculation. Gray means no density value; it is different from zero.</p>
+      <p>White alone includes people reporting only White, regardless of Hispanic/Latino origin. Everyone else includes people reporting multiple races. Demographics describe the tract population, not neighborhood quality.</p>
+      <p>Published margins of error refer to population counts (90% confidence). Margins for density, percentages, and the derived “everyone else” count have not been calculated. These are five-year estimates, not current counts.</p>
+      <p>Sources: <a href="https://www.census.gov/programs-surveys/acs">U.S. Census ACS</a> and <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html">TIGER/Line</a>. Boston neighborhood outlines will be added separately.</p>
+    </section>
+    <footer><a href="/api/metadata">Dataset metadata</a><a href="/api/tracts">Download GeoJSON</a><a href="/docs">API documentation</a></footer>
+    <noscript><p>JavaScript is required for the interactive map. You can download the GeoJSON using the link above.</p></noscript>
+  </main>
+</body>
 </html>

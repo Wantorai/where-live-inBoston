@@ -128,4 +128,4 @@ Outputs:
 
 234 features have density; one has `density_status=no_land_area` and a null density. Zero population with positive land area produces zero density. Missing population would produce a null value with `missing_population` status. The population sum remains 785,121 after the join. No density or percentage margin of error is derived in this step; published count MOEs remain in the properties.
 
-The GeoJSON is a reproducible data artifact, not yet connected to the application. Rebuilding with `--from-cache` produced byte-identical GeoJSON in the tested environment.
+The GeoJSON is served by /api/tracts and displayed on the interactive map; its metadata is served by /api/metadata. Rebuilding with `--from-cache` produced byte-identical GeoJSON in the tested environment.
