@@ -96,6 +96,27 @@ The health endpoint returns HTTP 200 and `{"status":"ok"}`. It confirms the API 
 
 Stop the development server with **Ctrl+C**. `--reload` restarts it when Python source files change and is intended for development.
 
+## First Census request
+
+A small command-line example requests the 2020–2024 ACS population estimate and margin of error for Boston city. This is a learning step before tract-level processing; it does not change the map's planned geography.
+
+Copy `.env.example` to `.env` and set your activated `CENSUS_API_KEY`, then run from the repository root:
+
+```bash
+uv sync --locked
+uv run --locked --env-file .env python -m boston_map.census
+```
+
+The first unauthenticated request returned a Census `Missing Key` page; a successful authenticated download is still pending. The example validates the response and saves successful data and key-free metadata in the ignored `data/raw/census/` directory. The existing web app still requires no Census key.
+
+After a successful download, inspect it again without network access:
+
+```bash
+uv run --locked python -m boston_map.census --from-cache
+```
+
+See [request parameters, field definitions, and sources](data/README.md). The CLI runs separately from the web app; no population data is displayed on the page yet.
+
 ## Checks
 
 ```bash
@@ -104,7 +125,7 @@ uv run --locked ruff check .
 uv run --locked ruff format --check .
 ```
 
-The health test checks the HTTP status, JSON content type, and response body without starting a network server.
+The health test checks the HTTP status, JSON content type, and response body without starting a network server. Census parser tests use synthetic rows to check geography codes, numeric conversion, special missing-value codes, and malformed responses without contacting Census.
 
 ## Implementation roadmap
 
@@ -118,6 +139,6 @@ The health test checks the HTTP status, JSON content type, and response body wit
 
 ## Documentation
 
-The public README is maintained in English and contains the current setup and verification instructions. Russian learning notes are kept locally under `docs/`, which is currently excluded from Git. Public data-source and methodology documentation will be added alongside the data pipeline.
+The public README is maintained in English and contains the current setup and verification instructions. Russian learning notes are kept locally under `docs/`, which is currently excluded from Git. Public Census documentation lives in [data/README.md](data/README.md).
 
 Changes are developed in small, explained steps. The repository owner performs all pushes and any future deployments.
