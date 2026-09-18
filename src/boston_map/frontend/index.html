@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Explore Boston population density using U.S. Census data. A project in development.">
+    <title>Where Live in Boston</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">Boston · Population explorer</p>
+        <h1>Where Live in Boston</h1>
+        <p class="intro">Understanding the city, one neighborhood at a time.</p>
+      </header>
+
+      <section class="card" aria-labelledby="project-title">
+        <p class="eyebrow">Work in progress</p>
+        <h2 id="project-title">A closer look at Boston</h2>
+        <p>This project will map residential population density using U.S. Census estimates, with neighborhood boundaries for context.</p>
+        <p>The map and Census data are not available yet. This first page checks the connection to the application.</p>
+      </section>
+
+      <section class="card" aria-labelledby="connection-title">
+        <h2 id="connection-title">Application connection</h2>
+        <p id="connection-status" class="status" data-state="idle" role="status" aria-live="polite">Connection not checked yet.</p>
+        <button id="check-connection" type="button">Check connection</button>
+        <noscript><p>Enable JavaScript to check the connection, or open the <a href="/api/health">health endpoint</a> directly.</p></noscript>
+      </section>
+
+      <footer>
+        <span>Python · FastAPI · Open data</span>
+        <a href="/docs">API documentation</a>
+      </footer>
+    </main>
+  </body>
+</html>

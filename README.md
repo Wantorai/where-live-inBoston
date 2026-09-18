@@ -2,7 +2,7 @@
 
 A Python geospatial portfolio project exploring residential population density in Boston using U.S. Census data.
 
-**Status: initial API and Docker setup implemented.** `GET /api/health` returns `{"status":"ok"}`. The map, data pipeline, and frontend are planned.
+**Status: minimal frontend, API, and Docker setup implemented.** The home page checks the API connection. The map and data pipeline are planned.
 
 ## MVP
 
@@ -28,9 +28,9 @@ Census API + TIGER/Line + neighborhood boundaries
                Separate web frontend
 ```
 
-The architecture above is the target design. The backend uses Python and FastAPI; the data pipeline will also use Python. The planned frontend uses plain HTML, CSS, and JavaScript, with MapLibre GL JS proposed for the map. FastAPI will serve the frontend files and API from the same application. Prepared GeoJSON files will provide the initial storage layer. TypeScript can be considered later if the browser code grows.
+The architecture above is the target design. The backend uses Python and FastAPI; the data pipeline will also use Python. The frontend uses plain HTML, CSS, and JavaScript, with MapLibre GL JS proposed for the future map. FastAPI serves the frontend files and API from the same application. Frontend assets live in `src/boston_map/frontend/` so they are included in the installed Python package. Prepared GeoJSON files will provide the initial storage layer. TypeScript can be considered later if the browser code grows.
 
-Docker Compose currently runs one API container. The same application will also serve the frontend when it is implemented. The map demo will include a small, documented real-data snapshot so reviewers do not need a Census API key or a data import to explore the map. Data refresh will be a separate workflow. Initial image builds and the future online basemap require internet access.
+Docker Compose runs one container serving both the page and API. The map demo will include a small, documented real-data snapshot so reviewers do not need a Census API key or a data import to explore the map. Data refresh will be a separate workflow. Initial image builds and the future online basemap require internet access.
 
 An optional Folium HTML export may be added later. Hosted deployment is outside the current scope.
 
@@ -51,10 +51,11 @@ docker compose up --build
 
 Wait for `Application startup complete`, then open:
 
+- <http://127.0.0.1:8000/> — home page with an automatic connection check.
 - <http://127.0.0.1:8000/api/health> — HTTP 200 with `{"status":"ok"}`.
 - <http://127.0.0.1:8000/docs> — interactive API documentation.
 
-Python, uv, and Census credentials are not required on the host. The first build downloads base images and dependencies. Only the API is available at this stage; `/` returns 404 until the frontend is added. Swagger UI in `/docs` loads assets from a CDN.
+Python, uv, and Census credentials are not required on the host. The first build downloads base images and dependencies. The home page and API are available; the map and Census data are not implemented yet. Swagger UI in `/docs` loads assets from a CDN.
 
 Stop with **Ctrl+C**, then remove the project's stopped container and network:
 
@@ -87,10 +88,11 @@ uv run --locked uvicorn boston_map.api.main:app --reload
 
 The project targets Python 3.12. uv can download the required interpreter and creates an isolated `.venv`; the first setup needs internet access. `uv.lock` records the resolved dependency versions. No Census credentials or Docker installation are required for this step.
 
+- Home page: <http://127.0.0.1:8000/>
 - Health endpoint: <http://127.0.0.1:8000/api/health>
 - Interactive API documentation: <http://127.0.0.1:8000/docs>
 
-The health endpoint returns HTTP 200 and `{"status":"ok"}`. It confirms the API responds, not that Census data is available. The root path `/` currently returns 404 because the frontend is not implemented. The documentation page loads Swagger UI assets from a CDN.
+The health endpoint returns HTTP 200 and `{"status":"ok"}`. It confirms the API responds, not that Census data is available. The root path `/` serves the connection-check page. It shows loading, success, or error and offers a retry button; requests time out after five seconds. The page uses only local assets and requires JavaScript for the connection check. The documentation page loads Swagger UI assets from a CDN.
 
 Stop the development server with **Ctrl+C**. `--reload` restarts it when Python source files change and is intended for development.
 
@@ -108,7 +110,7 @@ The health test checks the HTTP status, JSON content type, and response body wit
 
 1. Agree on architecture and document the development workflow.
 2. Create a minimal FastAPI service with a health endpoint — implemented.
-3. Containerize the API — implemented; add a minimal HTML/JavaScript frontend next.
+3. Containerize the API and add a minimal HTML/JavaScript frontend — implemented.
 4. Fetch Census population estimates and compatible boundaries.
 5. Validate joins and land-area density calculations.
 6. Implement map layers, tooltips, legend, and error states.
@@ -119,4 +121,3 @@ The health test checks the HTTP status, JSON content type, and response body wit
 The public README is maintained in English and contains the current setup and verification instructions. Russian learning notes are kept locally under `docs/`, which is currently excluded from Git. Public data-source and methodology documentation will be added alongside the data pipeline.
 
 Changes are developed in small, explained steps. The repository owner performs all pushes and any future deployments.
-
