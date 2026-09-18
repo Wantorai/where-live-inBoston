@@ -86,7 +86,7 @@ The alternative-definition row overlaps the White-alone row and must not be adde
 
 ACS supports the tract hierarchy `state → county → tract`; it does not offer a `place → tract` filter in this release. See the [2024 ACS geography reference](https://api.census.gov/data/2024/acs/acs5/geography.html).
 
-We request `for=tract:*` and `in=state:25 county:025`. This covers Suffolk County, including places outside Boston. City selection is deliberately deferred until compatible geographic boundaries are available; county rows must not be presented as Boston-only observations.
+We request `for=tract:*` and `in=state:25 county:025`. This covers Suffolk County, including places outside Boston. The agreed map scope is the entire county. All 235 downloaded tracts remain in scope, with no Boston-only filtering. Compatible tract geometry and land area will be joined by GEOID next.
 
 ```bash
 uv run --locked --env-file .env python -m boston_map.census_tracts
@@ -105,4 +105,4 @@ Cached processing verifies the raw checksum and dataset parameters before rebuil
 
 Downloaded September 18, 2026: **235 unique tracts**, **785,121** summed population estimates, **8 zero-population tracts**, no missing population estimates. The population sum describes the downloaded county tracts, not Boston city (666,442 in the separate city query). Margins of error are not summed.
 
-Example: tract `000101`, GEOID `25025000101`, has population **1,588 ±302**, White alone **1,128 ±284 (71.03%)**, everyone else **460 (28.97%)**. These are ACS 2020–2024 estimates; percentage and derived-complement MOEs are not calculated. Boston membership is not asserted until the boundary check.
+Example: tract `000101`, GEOID `25025000101`, has population **1,588 ±302**, White alone **1,128 ±284 (71.03%)**, everyone else **460 (28.97%)**. These are ACS 2020–2024 estimates; percentage and derived-complement MOEs are not calculated. Boston membership is not required: the map covers all county tracts.

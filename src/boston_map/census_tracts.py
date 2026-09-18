@@ -1,4 +1,4 @@
-"""Download Suffolk County tract demographics; Boston boundary filtering comes later."""
+"""Download tract demographics for the full Suffolk County map coverage."""
 
 import argparse
 import hashlib

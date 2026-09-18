@@ -1,6 +1,6 @@
 # Where Live in Boston
 
-A Python geospatial portfolio project exploring residential population density in Boston using U.S. Census data.
+A Python geospatial portfolio project exploring residential population density across Suffolk County, Massachusetts (Boston, Chelsea, Revere, and Winthrop), using U.S. Census data.
 
 **Status: minimal frontend, API, and Docker setup implemented.** The home page checks the API connection. The map and data pipeline are planned.
 
@@ -133,7 +133,7 @@ Rebuild the normalized snapshot from the saved raw response:
 uv run --locked python -m boston_map.census_tracts --from-cache
 ```
 
-The checked-in `data/processed/suffolk_tracts_2024.json` contains 235 tracts, source metadata, estimates, count margins of error, and derived percentages. **This is Suffolk County, not a Boston-only dataset.** Selecting Boston tracts requires compatible geographic boundaries, which are the next step. The web app does not display this snapshot yet. Refreshing requires a key; inspecting the included JSON does not.
+The checked-in `data/processed/suffolk_tracts_2024.json` contains 235 tracts, source metadata, estimates, count margins of error, and derived percentages. **The map covers all of Suffolk County.** All 235 tracts remain in scope; no Boston city clipping is planned. The next step is to join compatible tract boundaries by GEOID and calculate population per square kilometer of land. The web app does not display this snapshot yet. Refreshing requires a key; inspecting the included JSON does not.
 
 ## Checks
 
