@@ -53,3 +53,31 @@ Published ACS margins of error use a 90% confidence level. When a numeric margin
 This response contains no boundaries or land area. It cannot yet provide population density. The next geography step will introduce Census tracts and compatible boundary files.
 
 Sources: [ACS five-year data](https://www.census.gov/data/developers/data-sets/acs-5year.html), [ACS value annotations](https://www.census.gov/data/developers/data-sets/acs-1year/notes-on-acs-estimate-and-annotation-values.html), [margin of error definitions](https://www.census.gov/programs-surveys/acs/methodology/sample-size-and-data-quality/sample-size-definitions.html).
+
+## Race and origin data
+
+```bash
+uv run --locked --env-file .env python -m boston_map.census --demographics
+uv run --locked python -m boston_map.census --demographics --from-cache
+```
+
+The expanded request collects estimates (`E`) and count margins of error (`M`) from [B02001: Race](https://api.census.gov/data/2024/acs/acs5/groups/B02001.html) and [B03002: Hispanic or Latino Origin by Race](https://api.census.gov/data/2024/acs/acs5/groups/B03002.html), alongside B01003. It saves a separate `boston_demographics_2024.json` and metadata file under `data/raw/census/`.
+
+B02001 uses seven mutually exclusive groups: codes 002–008. B03002 uses seven non-Hispanic race groups (003–009) plus Hispanic/Latino of any race (012). Each partition is checked against its table total and the overall population. These are two alternative views of the same population; never sum across tables. Detailed subcategories of Two or more races are not added again.
+
+The requested binary comparison uses **White alone (B02001_002E), regardless of Hispanic/Latino origin**, and **everyone else = total − White alone**. People reporting multiple races, including White, belong to everyone else in this definition. Non-Hispanic White alone (B03002_003E) is a different measure, retained separately.
+
+Percentages are derived as category estimate / table total × 100 and rounded to two decimal places. Nulls and zero denominators have no percentage. Stored MOEs apply to counts, not percentages. No MOE is currently calculated for the derived everyone-else count; it is explicitly null, not zero. Raw negative special codes remain available.
+
+### Observed city-level result
+
+Downloaded September 18, 2026; ACS period 2020–2024, Boston city, Massachusetts (GEOID 2507000):
+
+| Measure | Estimate | Share | Published count MOE |
+| --- | ---: | ---: | ---: |
+| Total population | 666,442 | 100% | ±55 |
+| White alone | 308,273 | 46.26% | ±2,601 |
+| Everyone else (derived) | 358,169 | 53.74% | Not calculated |
+| Non-Hispanic White alone (alternative definition) | 293,690 | 44.07% | ±2,152 |
+
+The alternative-definition row overlaps the White-alone row and must not be added to it. The two full demographic partitions each sum to 666,442. These are five-year estimates, not current counts. Tract-level acquisition and map display remain future steps.

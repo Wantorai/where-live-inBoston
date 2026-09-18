@@ -107,13 +107,15 @@ uv sync --locked
 uv run --locked --env-file .env python -m boston_map.census
 ```
 
-The first unauthenticated request returned a Census `Missing Key` page; a successful authenticated download is still pending. The example validates the response and saves successful data and key-free metadata in the ignored `data/raw/census/` directory. The existing web app still requires no Census key.
+Authenticated city-level population and demographic downloads succeeded on September 18, 2026. Census requires an activated API key for downloads. The example validates the response and saves successful data and key-free metadata in the ignored `data/raw/census/` directory. The existing web app still requires no Census key.
 
 After a successful download, inspect it again without network access:
 
 ```bash
 uv run --locked python -m boston_map.census --from-cache
 ```
+
+Add `--demographics` to collect race (B02001) and race/origin (B03002) estimates and margins of error in the same request. The output includes White alone versus everyone else; multiracial people belong to the latter group. Use `--demographics --from-cache` to inspect the saved demographic response.
 
 See [request parameters, field definitions, and sources](data/README.md). The CLI runs separately from the web app; no population data is displayed on the page yet.
 
