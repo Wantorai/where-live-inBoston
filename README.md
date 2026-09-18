@@ -2,7 +2,7 @@
 
 A Python geospatial portfolio project exploring residential population density across Suffolk County, Massachusetts (Boston, Chelsea, Revere, and Winthrop), using U.S. Census data.
 
-**Status: interactive density map implemented.** Explore 235 Suffolk County tracts, their population density, and demographic details. Docker includes the prepared data; no Census key is needed to view the map.
+**Status: interactive density map implemented.** Explore 234 displayed Suffolk County tracts, their population density, and demographic details. Docker includes the prepared data; no Census key is needed to view the map.
 
 ## MVP
 
@@ -186,8 +186,8 @@ Changes are developed in small, explained steps. The repository owner performs a
 - The tract selector offers the same details through a keyboard-accessible control.
 - Colors use fixed density thresholds: 1,000, 5,000, 10,000, 20,000, and 30,000 people/kmВІ. Gray means missing density, not zero.
 - Details show population and White-alone count MOEs, land area, density, and White alone versus everyone else. Percentage and derived-count MOEs are not calculated.
-- Full tract polygons include water; the density denominator uses land area only. This explains the large offshore polygon with no density.
-- The default map needs no external map requests after local startup. Optional OpenStreetMap streets need internet; attribution is shown on the map. Tiles are requested directly by the browser, with no prefetching or offline tile downloads.
+- Full tract polygons include water; the density denominator uses land area only. Ocean tract 990101 (GEOID 25025990101) is excluded from display, selection and viewport fitting. The API and downloadable snapshot retain all 235 tracts.
+- OpenStreetMap streets are enabled by default and require internet; attribution is shown on the map. The density overlay defaults to 45% opacity, adjustable with a slider. Streets can be turned off to view the local polygons without a basemap. Tiles are requested directly by the browser, with no prefetching or offline tile downloads.
 - `GET /api/tracts` serves the prepared GeoJSON; `GET /api/metadata` serves provenance. Missing files return HTTP 503. These routes never contact Census.
 - Run local commands from the repository root. `BOSTON_DATA_DIR` can override the default `data/processed` directory when launching elsewhere.
 

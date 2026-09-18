@@ -21,8 +21,10 @@
     <div class="toolbar">
       <p id="map-status" role="status" aria-live="polite">Loading tract data…</p>
       <button id="retry" type="button">Reload map</button>
-      <button id="reset-view" type="button" disabled>Show whole county</button>
-      <label><input id="streets" type="checkbox"> Show street basemap (internet)</label>
+      <button id="reset-view" type="button" disabled>Show all displayed tracts</button>
+      <label><input id="streets" type="checkbox" checked> Street basemap (internet)</label>
+      <label for="density-opacity">Density opacity <output id="opacity-value" for="density-opacity">45%</output></label>
+      <input id="density-opacity" type="range" min="0" max="100" value="45" step="5">
     </div>
     <div class="map-layout">
       <section class="map-card" aria-label="Interactive population density map">
@@ -44,7 +46,7 @@
     </div>
     <section class="card notes">
       <h2>How to read this map</h2>
-      <p>Density = estimated population ÷ land area. Full tract boundaries can include water, but water is excluded from the calculation. Gray means no density value; it is different from zero.</p>
+      <p>Density = estimated population ÷ land area. Full tract boundaries can include water, but water is excluded from the calculation. Gray means no density value; it is different from zero. Ocean tract 990101 (zero population and land area) is hidden from the map and tract selector, but retained in the downloadable dataset.</p>
       <p>White alone includes people reporting only White, regardless of Hispanic/Latino origin. Everyone else includes people reporting multiple races. Demographics describe the tract population, not neighborhood quality.</p>
       <p>Published margins of error refer to population counts (90% confidence). Margins for density, percentages, and the derived “everyone else” count have not been calculated. These are five-year estimates, not current counts.</p>
       <p>Sources: <a href="https://www.census.gov/programs-surveys/acs">U.S. Census ACS</a> and <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html">TIGER/Line</a>. Boston neighborhood outlines will be added separately.</p>

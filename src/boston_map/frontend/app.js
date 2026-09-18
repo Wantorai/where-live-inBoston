@@ -5,6 +5,9 @@ const selector = document.querySelector('#tract-select');
 const details = document.querySelector('#tract-details');
 const streets = document.querySelector('#streets');
 const basemapStatus = document.querySelector('#basemap-status');
+const opacitySlider = document.querySelector('#density-opacity');
+const opacityValue = document.querySelector('#opacity-value');
+const hiddenTracts = new Set(['25025990101']);
 const colors = ['#edf8e9', '#c7e9c0', '#a1d99b', '#74c476', '#31a354', '#006d2c'];
 const limits = [1000, 5000, 10000, 20000, 30000];
 const noDataColor = '#b4b9bd';
@@ -75,6 +78,9 @@ async function loadMap() {
     if (!response.ok) throw new Error('Data unavailable');
     const data = await response.json();
     if (data.type !== 'FeatureCollection' || !data.features?.length) throw new Error('Invalid GeoJSON');
+    // Display-only exclusion: preserve the full county snapshot in the API/download.
+    data.features = data.features.filter(feature => !hiddenTracts.has(feature.properties.geoid));
+    if (!data.features.length) throw new Error('No visible tracts');
     bounds = new maplibregl.LngLatBounds();
     function extend(coordinates) {
       if (typeof coordinates[0] === 'number') bounds.extend(coordinates);
@@ -94,12 +100,13 @@ async function loadMap() {
       const timeout = setTimeout(() => reject(new Error('Map initialization timed out')), 15000);
       map.once('load', () => {clearTimeout(timeout); resolve();});
     });
+    map.fitBounds(bounds, {padding: 25, duration: 0});
     map.addSource('streets', {type: 'raster', tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'], tileSize: 256, maxzoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'});
     map.addLayer({id: 'streets', type: 'raster', source: 'streets', layout: {visibility: streets.checked ? 'visible' : 'none'}});
     map.addSource('tracts', {type: 'geojson', data, attribution: 'U.S. Census Bureau · ACS 2020–2024 / TIGER 2024'});
     const step = ['step', ['get', 'population_density_km2'], colors[0]];
     limits.forEach((limit, i) => step.push(limit, colors[i + 1]));
-    map.addLayer({id: 'density', type: 'fill', source: 'tracts', paint: {'fill-color': ['case', ['==', ['get', 'population_density_km2'], null], noDataColor, step], 'fill-opacity': 0.78}});
+    map.addLayer({id: 'density', type: 'fill', source: 'tracts', paint: {'fill-color': ['case', ['==', ['get', 'population_density_km2'], null], noDataColor, step], 'fill-opacity': Number(opacitySlider.value) / 100}});
     map.addLayer({id: 'outlines', type: 'line', source: 'tracts', paint: {'line-color': '#405e50', 'line-width': 0.6}});
     map.addLayer({id: 'selected', type: 'line', source: 'tracts', filter: ['==', ['get', 'geoid'], ''], paint: {'line-color': '#d17217', 'line-width': 3}});
     popup = new maplibregl.Popup({closeButton: false, closeOnClick: false});
@@ -112,8 +119,7 @@ async function loadMap() {
     });
     map.on('mouseleave', 'density', () => {map.getCanvas().style.cursor = ''; popup.remove();});
     map.on('click', 'density', event => showDetails(event.features[0].properties.geoid));
-    map.fitBounds(bounds, {padding: 25, duration: 0});
-    statusMessage.textContent = `${data.features.length} Census tracts · ACS 2020–2024 · Click a tract to explore`;
+    statusMessage.textContent = `${data.features.length} displayed tracts · ACS 2020–2024 · Click a tract to explore`;
     statusMessage.dataset.state = 'success';
     reset.disabled = false; selector.disabled = false;
   } catch {
@@ -125,4 +131,8 @@ selector.addEventListener('change', () => showDetails(selector.value));
 retry.addEventListener('click', loadMap);
 reset.addEventListener('click', () => map.fitBounds(bounds, {padding: 25}));
 streets.addEventListener('change', toggleStreets);
+opacitySlider.addEventListener('input', () => {
+  opacityValue.textContent = `${opacitySlider.value}%`;
+  if (map?.getLayer('density')) map.setPaintProperty('density', 'fill-opacity', Number(opacitySlider.value) / 100);
+});
 loadMap();
